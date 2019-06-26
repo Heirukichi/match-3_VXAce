@@ -1,7 +1,7 @@
 #===============================================================================================
 # HEIRUKICHI MATCH-3 - VX ACE
 #===============================================================================================
-# Version 1.0.1
+# Version 1.0.2
 # - Author: Heirukichi
 # - Last update 06-26-2019 [MM-DD-YYYY]
 #===============================================================================================
@@ -62,6 +62,10 @@
 #===============================================================================================
 # UPDATE LOG
 #-----------------------------------------------------------------------------------------------
+# 06-26-2019 [MM-DD-YYYY] Version 1.0.2
+# * Fixed a bug that caused hrk_mtt_swap_blocks to check the selected block twice instead of
+#   checking both blocks when eliminating matching blocks.
+#
 # 06-26-2019 [MM-DD-YYYY] Version 1.0.1
 # * Updated Terms of Use. There is no substantial change in what you can do with the script, the
 #   only thing that changed is how credit must be given (you have to provide a link to my blog
@@ -423,6 +427,8 @@ class Game_Interpreter
 		blclr = $game_map.puzzle_grid[block.x][block.y].color
 		x2 = $game_map.round_x_with_direction(block.x, HRK_MTT.dir)
 		y2 = $game_map.round_y_with_direction(block.y, HRK_MTT.dir)
+		oldx = block.x
+		oldy = block.y
 		block2 = $game_map.events[$game_map.puzzle_grid[x2][y2].id]
 		return unless $game_map.puzzle_grid[x2][y2].block?
 		blclr2 = $game_map.puzzle_grid[x2][y2].color
@@ -436,7 +442,7 @@ class Game_Interpreter
 		Fiber.yield while block2.moving?
 		block.instance_variable_set(:@through, false)
 		block2.instance_variable_set(:@through, false)
-		HRK_MTT.check_adjacent_blocks(block.x, block.y)
+		HRK_MTT.check_adjacent_blocks(oldx, oldy)
 		HRK_MTT.check_adjacent_blocks(x2, y2)
 	end
 	
