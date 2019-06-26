@@ -1,25 +1,27 @@
 #===============================================================================================
 # HEIRUKICHI MATCH-3 - VX ACE
 #===============================================================================================
-# Version 1.0.0
+# Version 1.0.1
 # - Author: Heirukichi
-# - Last update 06-25-2019 [MM-DD-YYYY]
+# - Last update 06-26-2019 [MM-DD-YYYY]
 #===============================================================================================
 # TERMS OF USE
 #-----------------------------------------------------------------------------------------------
-# You are free to use this script in both commercial and non commercial games as long as proper
-# credit is given to me (Heirukichi). Feen free to edit this script as much as you like as long
-# as you do not pretend you wrote the whole script and you distribute it under the same license.
+# This script is under the GNU General Public License v3.0. This means that:
+# - You are free to use this script in both commercial and non-commercial games as long as you
+#   give proper credits to me (Heirukichi) and provide a link to my website;
+# - You are free to modify this script as long as you do not pretend you wrote this and you
+#   distribute it under the same license as the original.
 #
-# Attribution-ShareAlike 4.0 International: https://creativecommons.org/licenses/by-sa/4.0/
+# You can review the full license here: https://www.gnu.org/licenses/gpl-3.0.html
 #
-# In addition to this I would like to be notified when this script is used in a commercial game.
-# As the license says the usage of this script is free. The notification is only used to keep
-# track of games where my script is being used.
-# You can contact me using the appropriate form on my blog, or you can send me a private message
-# on RPG Maker Forums @Heirukichi. While doing this is not mandatory please do not forget about
-# it. It helps a lot. Of course feel free to notify me when you use it for non-commercial games
-# as well (if you feel like doing it).
+# In addition I'd like to keep track of games where my scripts are used so, even if this is not
+# mandatory, I'd like you to inform me and send me a link when a game including my script is
+# published. As I said, this is not mandatory but it really helps me and it is much appreciated.
+#
+# IMPORTANT NOTICE:
+# If you want to distribute this code, feel free to do it, but provide a link to my website
+# instead of pasting my script somewhere else.
 #===============================================================================================
 # DESCRIPTION
 #-----------------------------------------------------------------------------------------------
@@ -57,6 +59,14 @@
 #
 # Everything else should be configured in the CONFIG module below. Detailed instructions can be
 # found there.
+#===============================================================================================
+# UPDATE LOG
+#-----------------------------------------------------------------------------------------------
+# 06-26-2019 [MM-DD-YYYY] Version 1.0.1
+# * Updated Terms of Use. There is no substantial change in what you can do with the script, the
+#   only thing that changed is how credit must be given (you have to provide a link to my blog
+#   instead of posting this script somewhere and when giving credits). For more details you can
+#   review the complete license in the Terms of Use paragraph above.
 #===============================================================================================
 
 $imported = {} if $imported.nil?
