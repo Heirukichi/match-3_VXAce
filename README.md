@@ -4,9 +4,13 @@ _Author: Heirukichi_
 ## DESCRIPTION
 This script allows you to create match-3 puzzles in your VXAce games. It allows you to move elements of your puzzle by either pushing them or swapping them with other elements.
 
+## TABLE OF CONTENTS
+* [Installation](#installation)
+* [Usage](#usage)
+* [License](#license)
 
 ## INSTALLATION
-Copy/paste this script in your project BELOW Materials and above main. The script aliases a few methods of the `Game_Map` class and `Graphics` module. Be sure to place it BELOW any script that overwrites those methods.
+Copy/paste this script in your project _BELOW_ Materials and above main. The script aliases a few methods of the `Game_Map` class and `Graphics` module. Be sure to place it _BELOW_ any script that overwrites those methods.
 When using this script you can mark puzzle maps using the following notetad: `[hrkm3p]`.
 In any map marked as a puzzle map, you can mark events that have to act as blocks for your puzzle. Those events should contain a comment with the following syntax: "Block: color_here".
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
