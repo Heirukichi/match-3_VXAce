@@ -1,9 +1,9 @@
 #===============================================================================================
 # HEIRUKICHI MATCH-3 - VX ACE
 #===============================================================================================
-# Version 1.0.2
+# Version 1.1.0
 # - Author: Heirukichi
-# - Last update 06-26-2019 [MM-DD-YYYY]
+# - Last update 06-30-2019 [MM-DD-YYYY]
 #===============================================================================================
 # TERMS OF USE
 #-----------------------------------------------------------------------------------------------
@@ -29,6 +29,10 @@
 #===============================================================================================
 # INSTRUCTIONS
 #-----------------------------------------------------------------------------------------------
+# Copy/paste this script in your project BELOW Materials and above main. The script aliases a
+# few methods of the Game_Map class and Graphics module. Be sure to place it BELOW any script
+# that overwrites those methods.
+#
 # When using this script you can mark puzzle maps using the following notetad: [hrkm3p].
 # In any map marked as a puzzle map, you can mark events that have to act as blocks for your
 # puzzle. Those events should contain a comment with the following syntax: "Block: color_here".
@@ -53,6 +57,14 @@
 #
 # AUTHOR NOTE: I recommend using block swapping with Below Characters events.
 #
+# If you want to reset the puzzle you can use the following script call in one of your events:
+# - hrk_mtt_reset_puzzle
+#
+# The script call will automatically reset your map. However, to do so, you have to designate a
+# dummy map. That dummy map is used to temporary transfer the player to automatically reset the
+# map where the puzzle takes place. The reset happens while the screen is frozen so you can use
+# any map you want. Even so, I recommend using a small empty map to speed up the process.
+#
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # IMPORTANT: the script does not work with looping maps!
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -62,6 +74,10 @@
 #===============================================================================================
 # UPDATE LOG
 #-----------------------------------------------------------------------------------------------
+# 06-30-2019 [MM-DD-YYYY] Version 1.1.0
+# * Added a method to automatically reset your puzzle.
+# * Aliased fadein and fadeout methods in Graphics module.
+#
 # 06-26-2019 [MM-DD-YYYY] Version 1.0.2
 # * Fixed a bug that caused hrk_mtt_swap_blocks to check the selected block twice instead of
 #   checking both blocks when eliminating matching blocks.
@@ -116,6 +132,12 @@ module HRK_MTT
 		# true otherwise. Default is false.
 		#=======================================================================================
 		REVERSE_DIR = false
+		
+		#=======================================================================================
+		# This is a dummy map id. The player is temporary transferred to this map when resetting
+		# puzzle maps. Default is 1.
+		#=======================================================================================
+		DUMMY_MAP = 1
 		
 	end # end of CONFIG module
 	
@@ -176,6 +198,14 @@ module HRK_MTT
 		end
 		
 		#---------------------------------------------------------------------------------------
+		# * Reset block
+		#---------------------------------------------------------------------------------------
+		def reset_block
+			return unless block?
+			$game_self_switches[[$game_map.map_id, id, HRK_MTT.destroy]] = false
+		end
+		
+		#---------------------------------------------------------------------------------------
 		# * Returns true if the current block space contains an active block
 		#---------------------------------------------------------------------------------------
 		def active?
@@ -198,6 +228,13 @@ module HRK_MTT
 	#-------------------------------------------------------------------------------------------
 	def self.destroy
 		CONFIG::DISAPPEAR_SWITCH
+	end
+	
+	#-------------------------------------------------------------------------------------------
+	# * Dummy map id
+	#-------------------------------------------------------------------------------------------
+	def self.dummy_map
+		CONFIG::DUMMY_MAP
 	end
 	
 	#-------------------------------------------------------------------------------------------
@@ -339,6 +376,47 @@ module HRK_MTT
 		CONFIG::REVERSE_DIR ? $game_player.reverse_dir(d) : d
 	end
 	
+	#-------------------------------------------------------------------------------------------
+	# * Resetting?
+	#-------------------------------------------------------------------------------------------
+	def self.resetting?
+		@resetting
+	end
+	
+	#-------------------------------------------------------------------------------------------
+	# * Set Player Position
+	#-------------------------------------------------------------------------------------------
+	def self.set_player_position(map, x, y)
+		@player_position = [] if @player_position.nil?
+		@player_position.replace([map, x, y])
+	end
+	
+	#-------------------------------------------------------------------------------------------
+	# * Player Position
+	#-------------------------------------------------------------------------------------------
+	def self.player_position
+		return [1, 0, 0] if @player_position.nil?
+		@player_position
+	end
+	
+	#-------------------------------------------------------------------------------------------
+	# * Start Map Reset
+	#-------------------------------------------------------------------------------------------
+	def self.start_reset
+		@resetting = true
+		Graphics.freeze
+		set_player_position($game_map.map_id, $game_player.x, $game_player.y)
+	end
+	
+	#-------------------------------------------------------------------------------------------
+	# * Clear Map Reset
+	#-------------------------------------------------------------------------------------------
+	def self.clear_reset
+		@resetting = false
+		set_player_position(dummy_map, 0, 0)
+		Graphics.transition(30)
+	end
+	
 end # end of HRK_MTT module
 
 #===============================================================================================
@@ -395,6 +473,16 @@ class Game_Map
 		end
 	end
 	
+	#-------------------------------------------------------------------------------------------
+	# + New method: hrk_mtt_reset_blocks
+	#-------------------------------------------------------------------------------------------
+	def hrk_mtt_reset_blocks
+		events.each_key do |k|
+			e = events[k]
+			puzzle_grid[e.x][e.y].reset_block
+		end
+	end
+	
 end #end of Game_Map
 
 #===============================================================================================
@@ -446,4 +534,51 @@ class Game_Interpreter
 		HRK_MTT.check_adjacent_blocks(x2, y2)
 	end
 	
+	#-------------------------------------------------------------------------------------------
+	# + New method: hrk_mtt_reset_puzzle
+	#-------------------------------------------------------------------------------------------
+	def hrk_mtt_reset_puzzle
+		return unless $game_map.puzzle
+		HRK_MTT.start_reset
+		$game_map.hrk_mtt_reset_blocks
+		$game_player.reserve_transfer(HRK_MTT.dummy_map, 0, 0)
+		Fiber.yield while $game_player.transfer?
+		pos = HRK_MTT.player_position
+		$game_player.reserve_transfer(*pos)
+		Fiber.yield while $game_player.transfer?
+		HRK_MTT.clear_reset
+	end
+	
 end # end of Game_Interpreter
+
+#===============================================================================================
+# ** Graphics module
+#===============================================================================================
+module Graphics
+	
+	#-------------------------------------------------------------------------------------------
+	# * Graphics class (used to alias methods)
+	#-------------------------------------------------------------------------------------------
+	class << Graphics
+		
+		#---------------------------------------------------------------------------------------
+		# * Aliased method: fadein
+		#---------------------------------------------------------------------------------------
+		alias hrk_mtt_fadein_old	fadein
+		def fadein(d)
+			return if HRK_MTT.resetting?
+			hrk_mtt_fadein_old(d)
+		end
+		
+		#---------------------------------------------------------------------------------------
+		# * Aliased method: fadeout
+		#---------------------------------------------------------------------------------------
+		alias hrk_mtt_fadeout_old	fadeout
+		def fadeout(d)
+			return if HRK_MTT.resetting?
+			hrk_mtt_fadeout_old(d)
+		end
+		
+	end #end of Graphics class
+	
+end # end of Graphics module
