@@ -47,7 +47,7 @@ All the images in this project are under the CC BY-SA 4.0 International license.
 
 The code is under the GNU General Public License v3.0. You can review the complete GNU General Public License v3.0 in the LICENSE file or at this [link](https://www.gnu.org/licenses/gpl-3.0.html).
 
-To sum up things you are free to use this material in any commercial and non commercial project as long as _**ALL**_ the following conditions are satisfied:
+To sum up things you are free to use this material in any commercial and non commercial project as long as _ALL_ the following conditions are satisfied:
 - proper credit is given to me (Heirukichi);
 - a link to my website is provided (I recommend adding it to a credits.txt file in your project, but any other mean is fine);
 - if you modify anything, you still provide credit and properly mark the parts you have modified.
